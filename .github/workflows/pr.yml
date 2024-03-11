@@ -1,0 +1,22 @@
+name: Run Tests on PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build, Run tests
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+      - name: Install Jest globally
+        run: npm install -g jest
+      - name: Run tests
+        run: npm test
