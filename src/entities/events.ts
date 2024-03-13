@@ -4,6 +4,7 @@ import { EventMedia } from './eventMedia';
 import { Invitation } from './invitations';
 import { BaseEntity } from './base';
 import { Feedback } from './feedbacks';
+import { EventStatus } from '../types/eventStatus';
 
 @Entity('events')
 export class Event extends BaseEntity {
@@ -38,4 +39,14 @@ export class Event extends BaseEntity {
 
   @OneToMany(() => Feedback, feedback => feedback.event)
   feedbacks: Feedback[];
+
+  @Column({ name:'calendar_id', nullable: true })
+  calendarId: string;
+
+  @Column({
+    type: 'enum',
+    enum: EventStatus,
+    default: EventStatus.CONFIRMED,
+  })
+  status: EventStatus;
 }

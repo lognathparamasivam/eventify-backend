@@ -72,6 +72,11 @@ const options: swaggerJsdoc.Options = {
                         startDate: { type: 'string', format: 'date-time', description: 'The start date and time of the event.' },
                         endDate: { type: 'string', format: 'date-time', description: 'The end date and time of the event.' },
                         userId: { type: 'integer', description: 'The ID of the user associated with the event.' },
+                        status: {
+                            type: "string",
+                            enum: ['CONFIRMED', 'TENTATIVE', 'CANCELLED'],
+                            description: "The invitation response status of participant user"
+                        },
                         media: {
                             type: 'object',
                             properties: {
@@ -147,7 +152,7 @@ const options: swaggerJsdoc.Options = {
                         },
                         status: {
                             type: "string",
-                            enum: ['PENDING', 'ACCEPTED', 'REJECTED'],
+                            enum: ['PENDING', 'ACCEPTED', 'REJECTED', 'TENTATIVE'],
                             description: "The invitation response status of participant user"
                         },
                         checkin: {
@@ -266,11 +271,10 @@ const options: swaggerJsdoc.Options = {
                 createFeedbackRequest: {
                     type: 'object',
                     properties: {
-                        comment: { type: 'integer' },
-                        userId: { type: 'integer' },
+                        comment: { type: 'string' },
                         eventId: { type: 'integer' },
                     },
-                    required: ['comment', 'userId', 'eventId'],
+                    required: ['comment', 'eventId'],
                 },
                 createInvitationRequest: {
                     type: 'object',
@@ -322,7 +326,7 @@ const options: swaggerJsdoc.Options = {
                         userIds: { type: 'array', items: { type: 'integer'} },
                         eventId: { type: 'integer' },
                     },
-                    required: ['eventId', 'userIds'],
+                    required: ['eventId'],
                 },
             },
             responses: {

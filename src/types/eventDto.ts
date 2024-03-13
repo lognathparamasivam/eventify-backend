@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { EventStatus } from './eventStatus';
 export interface CreateEventDto {
     title: string;
     description: string;
@@ -7,12 +8,13 @@ export interface CreateEventDto {
 }
 
 export interface UpdateEventDto {
-    title: string;
-    description: string;
-    startDate: Date;
-    endDate: Date;
-    location: string;
+    title?: string;
+    description?: string;
+    startDate?: Date;
+    endDate?: Date;
+    location?: string;
     media?: EventMediaDto
+    status?: EventStatus
 }
 
 export interface EventMediaDto {

@@ -6,24 +6,27 @@ import { eventMediaRepository } from '../respositories/eventMediaRepository';
 import { injectable } from 'tsyringe';
 import logger from '../logger';
 import constants from '../utils/constants';
-import { applyFilters, isFilterParamsValid } from '../utils/common';
+import { applyFilters, isFilterParamsValid, lookupReponseByEventStatus } from '../utils/common';
 import { FilterDto } from '../types/filterDto';
+import { createCalendarEvent, deleteCalendarEvent, getCalendarEvent, updateCalendarEvent } from './calendarService';
 
 @injectable()
 export class EventService {
 
   async createEvent(createEventDto: CreateEventDto, userId: number): Promise<Event> {
-    return await eventRepository.save({
+    const event = await eventRepository.save({
       ...createEventDto,
       userId: userId
-    });
+    })
+    const calendarId = await createCalendarEvent(userId, event, []);
+    event.calendarId = calendarId
+    return await eventRepository.save(event);
   }
 
 
   async updateEvent(eventId: number, updateEventDto: UpdateEventDto): Promise<Event | null> {
     try {
       const event = await eventRepository.findOneBy({ id: eventId })
-
       if (!event) {
         throwError({
           errorCategory: 'RESOURCE_NOT_FOUND',
@@ -36,7 +39,6 @@ export class EventService {
       await eventRepository.save(event!);
 
       if (updateEventDto.media) {
-        console.log('events ' + JSON.stringify(event))
         await eventMediaRepository.save({
           eventId: event!.id,
           images: updateEventDto.media?.images ?? [],
@@ -44,6 +46,17 @@ export class EventService {
           documents: updateEventDto.media?.documents ?? []
         })
       }
+      const calenderEventData = await getCalendarEvent(event!.userId, event!.calendarId);
+      if (calenderEventData) {
+        calenderEventData.summary = event?.title;
+        calenderEventData.description = event?.description;
+        calenderEventData.start!.dateTime = new Date(event!.startDate!).toISOString()
+        calenderEventData.end!.dateTime = new Date(event!.endDate!).toISOString();
+        calenderEventData.location = event?.location
+        calenderEventData.status = lookupReponseByEventStatus(event!.status)
+        await updateCalendarEvent(event!.userId, event!.calendarId, calenderEventData)
+      }
+
       return event;
     } catch (err) {
       logger.error(err);
@@ -90,6 +103,10 @@ export class EventService {
     return event;
   }
 
+  async getEventByCalendarId(calenderId: string): Promise<Event | null> {
+    return await eventRepository.findOne({ where: { calendarId: calenderId } });
+  }
+
   async deleteEvent(id: number): Promise<void> {
     try {
       const event = await eventRepository.findOneBy({ id: id })
@@ -99,6 +116,7 @@ export class EventService {
           message: 'Event not found'
         })
       }
+      await deleteCalendarEvent(event!.userId,event!.calendarId);
       await eventRepository.delete({ id: id });
     } catch (err) {
       throwError({

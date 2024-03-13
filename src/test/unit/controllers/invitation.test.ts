@@ -69,7 +69,7 @@ describe('InvitationController', () => {
 
       await invitationController.updateInvitation(req as Request, res as Response);
 
-      expect(invitationServiceMock.updateInvitation).toHaveBeenCalledWith(1,mockInvitation,1);
+      expect(invitationServiceMock.updateInvitation).toHaveBeenCalledWith(mockInvitation,1);
       expect(sendSuccess).toHaveBeenCalledWith(req, res, [mockInvitation]);
     });
 

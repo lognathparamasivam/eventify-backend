@@ -5,10 +5,10 @@ export class BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @CreateDateColumn({ name: 'created_at' })
+    @CreateDateColumn({ name: 'created_at', default: new Date() })
     createdAt?: Date;
 
-    @UpdateDateColumn({ name: 'updated_at' })
+    @UpdateDateColumn({ name: 'updated_at', default: new Date() })
     updatedAt?: Date;
 
     @DeleteDateColumn({ name: 'deleted_at', nullable: true })
