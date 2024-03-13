@@ -27,5 +27,8 @@ export const throwError = (errors: {
         case 'BAD_REQUEST': {
           throw new ErrorResponse(402,errors.message)
         }
+        case 'FORBIDDEN': {
+          throw new ErrorResponse(403,errors.message)
+        }
   }
 }

@@ -23,16 +23,17 @@ describe('EventController', () => {
   let res: Partial<Response>;
 
   const mockEvent: Event = {
-      title: 'Test Event',
-      description: 'Test Description',
-      startDate: new Date('2024-03-18T04:44:13.000Z'),
-      endDate: new Date('2024-03-19T04:44:13.000Z'),
-      user: new User(),
-      userId: 5,
-      invitations: [],
-      location: '',
-      media: new EventMedia(),
-      id: 0
+    title: 'Test Event',
+    description: 'Test Description',
+    startDate: new Date('2024-03-18T04:44:13.000Z'),
+    endDate: new Date('2024-03-19T04:44:13.000Z'),
+    user: new User(),
+    userId: 5,
+    invitations: [],
+    location: '',
+    media: new EventMedia(),
+    id: 0,
+    feedbacks: []
   };
 
   const mockCreateEventDto: CreateEventDto = {

@@ -12,6 +12,8 @@ const eventController = container.resolve(EventController);
  * /api/v1/events:
  *   post:
  *     summary: Create a new event
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Events]
  *     description: Endpoint to create a new event.
  *     requestBody:
@@ -22,11 +24,16 @@ const eventController = container.resolve(EventController);
  *             $ref: '#/components/requestBodies/createEventRequest'
  *     responses:
  *       200:
- *         description: Event created successfully
+ *         description: A object of event
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Event'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Event'
  *       400:
  *         description: Bad request
  */
@@ -36,6 +43,8 @@ router.post('/',validateEventData, eventController.createEvent.bind(eventControl
  * /api/v1/events:
  *   get:
  *     summary: Get all events
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Events]
  *     description: Retrieve a list of all events.
  *     parameters:
@@ -56,7 +65,14 @@ router.post('/',validateEventData, eventController.createEvent.bind(eventControl
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/responses/eventResponse'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Event'
  */
 router.get('/', eventController.getEvents.bind(eventController));
 /**
@@ -64,6 +80,8 @@ router.get('/', eventController.getEvents.bind(eventController));
  * /api/v1/events/{eventId}:
  *   get:
  *     summary: Get an event by ID
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Events]
  *     description: Retrieve an event by its ID
  *     parameters:
@@ -75,11 +93,16 @@ router.get('/', eventController.getEvents.bind(eventController));
  *         description: Numeric ID of the event to retrieve
  *     responses:
  *       200:
- *         description: A single event object
+ *         description: A object of event
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Event'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Event'
  *       404:
  *         description: Event not found
  */
@@ -89,6 +112,8 @@ router.get('/:eventId', eventController.getEventById.bind(eventController));
  * /api/v1/events/{eventId}:
  *   patch:
  *     summary: Update an event by ID
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Events]
  *     description: Update an event's information by its ID
  *     parameters:
@@ -103,14 +128,19 @@ router.get('/:eventId', eventController.getEventById.bind(eventController));
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/updateEventRequest'
+ *             $ref: '#/components/requestBodies/updateEventRequest'
  *     responses:
  *       200:
- *         description: Event updated successfully
+ *         description: A object of event
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Event'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Event'
  *       404:
  *         description: Event not found
  */
@@ -121,6 +151,8 @@ router.patch('/:eventId',validateEventUpdateData,checkEventOrganizer, eventContr
  * /api/v1/events/{eventId}:
  *   delete:
  *     summary: Delete an event by ID
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Events]
  *     description: Delete an event by its ID
  *     parameters:

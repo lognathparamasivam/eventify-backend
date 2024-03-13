@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import properties from '../properties';
 import { AuthenticatedUser } from '../types/authenticatedUser';
@@ -8,9 +8,11 @@ import { EventService } from '../services/eventService';
 import { Event } from '../entities/events';
 import { sendError } from '../utils/sendResponse';
 import { container } from 'tsyringe';
+import { InvitationService } from '../services/invitationService';
 
 const SECRET_KEY = properties.secretKey;
 const eventService: EventService = container.resolve(EventService);
+const invitationService: InvitationService = container.resolve(InvitationService);
 
 export function authenticateToken(req: Request, res: Response, next: NextFunction) {
 
@@ -33,14 +35,16 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
     } 
   } catch (err) {
     logger.error(`Error occured in authenticateToken : ${err}`);
-    return res.status(constants.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: {
-        error: true,
-        message: constants.ERROR_MESSAGES[constants.INTERNAL_SERVER_ERROR],
-        path: req.baseUrl,
-      },
-    })
+    if(err instanceof JsonWebTokenError){
+      return res.status(constants.BAD_REQUEST).json({
+        success: false,
+        error: {
+          error: true,
+          message: `${err.name}:${err.message}`,
+          path: req.baseUrl,
+        },
+      })
+    }
   }
 }
 
@@ -65,6 +69,27 @@ export async function checkEventOrganizer(req: Request, res: Response, next: Nex
   const eventId = Number(req.body.eventId ?? req.params.eventId); 
   await eventService.getEventById(eventId,tokenUserId).then((result: Event | null) => {
     if (tokenUserId !== result?.userId) {
+      return res.status(403).json({
+        success: false,
+        error: {
+          error: true,
+          message: "Forbidden",
+          path: req.baseUrl,
+        },
+      })
+    }
+    next();
+  })
+  .catch((error) => {
+    sendError(req, res, error);
+  });
+}
+
+export async function checkFeedbackAuthorized(req: Request, res: Response, next: NextFunction) {
+  const tokenUserId = Number((req.user as AuthenticatedUser).user_id);
+  const eventId = Number(req.body.eventId); 
+  await invitationService.checkUserCheckin(tokenUserId,eventId).then((result: boolean) => {
+    if (!result) {
       return res.status(403).json({
         success: false,
         error: {

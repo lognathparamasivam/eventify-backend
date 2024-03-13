@@ -25,8 +25,17 @@ export interface EventMediaDto {
 export const createEventSchema = z.object({
   title: z.string().min(1).max(255),
   description: z.string().min(1),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(), 
+  startDate: z.string(),
+  endDate: z.string(), 
+}).refine(data => {
+  if (data.startDate && data.endDate) {
+    const startDate = new Date(data.startDate);
+    const endDate = new Date(data.endDate);
+    return startDate < endDate;
+  }
+  return false;
+},{
+  message: 'Start date must be lesser than end date',
 });
 
 export const updateEventSchema = z.object({
@@ -40,4 +49,13 @@ export const updateEventSchema = z.object({
     videos: z.array(z.string()).optional(), 
     documents: z.array(z.string()).optional(),
   }).optional(),
+}).refine(data => {
+  if (data.startDate && data.endDate) {
+    const startDate = new Date(data.startDate);
+    const endDate = new Date(data.endDate);
+    return startDate < endDate;
+  }
+  return false;
+},{
+  message: 'Start date must be lesser than end date',
 });

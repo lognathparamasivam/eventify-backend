@@ -3,6 +3,7 @@ import { User } from './users';
 import { EventMedia } from './eventMedia';
 import { Invitation } from './invitations';
 import { BaseEntity } from './base';
+import { Feedback } from './feedbacks';
 
 @Entity('events')
 export class Event extends BaseEntity {
@@ -34,4 +35,7 @@ export class Event extends BaseEntity {
 
   @OneToMany(() => Invitation, invitation => invitation.event)
   invitations: Invitation[];
+
+  @OneToMany(() => Feedback, feedback => feedback.event)
+  feedbacks: Feedback[];
 }
