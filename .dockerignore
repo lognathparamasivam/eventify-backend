@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+Dockerfile
+.nyc_coverage/
+.nyc_output/
+.env
