@@ -24,5 +24,8 @@ export const throwError = (errors: {
         case 'INTERNAL_SERVER_ERROR': {
           throw new ErrorResponse(500,errors.message)
         }
+        case 'BAD_REQUEST': {
+          throw new ErrorResponse(402,errors.message)
+        }
   }
 }

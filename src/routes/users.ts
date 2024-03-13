@@ -4,14 +4,14 @@ import { checkAuthorization } from '../middleware/authenticateToken';
 import { container } from 'tsyringe';
 
 const router = express.Router();
-const userController: UserController = container.resolve(UserController);
+const userController = container.resolve(UserController);
 
 
-router.post('/', userController.createUser);
-router.get('/', userController.getUsers);
-router.get('/:id', userController.getUserById);
-router.patch('/:id', checkAuthorization, userController.updateUser);
-router.delete('/:id', checkAuthorization, userController.deleteUser);
+router.post('/', userController.createUser.bind(userController));
+router.get('/', userController.getUsers.bind(userController));
+router.get('/:userId', userController.getUserById.bind(userController));
+router.patch('/:userId', checkAuthorization, userController.updateUser.bind(userController));
+router.delete('/:userId', checkAuthorization, userController.deleteUser.bind(userController));
 
 
 export default router;

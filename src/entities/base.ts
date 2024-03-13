@@ -1,14 +1,17 @@
-import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { CreateDateColumn, DeleteDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export class BaseEntity {
 
     @PrimaryGeneratedColumn()
     id: number;
 
-    @CreateDateColumn({ name: 'created_at', type: 'datetime' })
-    createdAt: Date | null;
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt?: Date;
 
-    @UpdateDateColumn({ name: 'updated_at', type: 'datetime' })
-    updatedAt: Date | null;
+    @UpdateDateColumn({ name: 'updated_at' })
+    updatedAt?: Date;
+
+    @DeleteDateColumn({ name: 'deleted_at', nullable: true })
+    deletedAt?: Date;
 
 }

@@ -1,4 +1,6 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
+import { Event } from './events';
+import { Invitation } from './invitations';
 import { BaseEntity } from './base';
 
 @Entity('users')
@@ -18,4 +20,10 @@ export class User extends BaseEntity {
 
   @Column({ name: 'image_url', nullable: true })
   imageUrl: string;
+
+  @OneToMany(() => Event, event => event.user)
+  events: Event[];
+
+  @OneToMany(() => Invitation, invitation => invitation.user)
+  invitations: Invitation[];
 }

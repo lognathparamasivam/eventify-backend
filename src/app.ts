@@ -8,6 +8,9 @@ import login from './routes/auth'
 import session from 'express-session';
 import { passportConfig } from './middleware/passportConfig';
 import userRoute from './routes/users';
+import eventRoute from './routes/events';
+import invitationRoute from './routes/invitations';
+
 const app = express();
 const port = properties.port;
 
@@ -40,7 +43,10 @@ app.get("/error", (req, res) => {
 });
   app.use('/auth', login);
   app.use("/api/v1/users", authenticateToken, userRoute);
- databaseConnect();
+  app.use("/api/v1/events", authenticateToken, eventRoute);
+  app.use("/api/v1/invitations", authenticateToken, invitationRoute);
+
+databaseConnect();
 
 app.listen(port, () => {
     logger.info(`Server Started in ${properties.env} mode on ${port}`);
