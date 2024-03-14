@@ -13,10 +13,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
       - name: Install dependencies
         run: npm install
       - name: Install Jest globally
         run: npm install -g jest
-      - name: Run tests
-        run: npm test
+      - name: Install NYC globally
+        run: npm install -g nyc
+      - name: Run lint
+        run: npm run lint
+      - name: Run Tests and Coverage
+        run: npm run coverage
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}

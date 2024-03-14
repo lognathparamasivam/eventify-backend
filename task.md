@@ -1,0 +1,17 @@
+## Eventify Backend Tasks List
+- [x] User Stories & Estimation
+- [x] Project Planning and R&D
+- [x] Project Setup
+- [] C4 Diagram
+- [x] Sprint 1 Demo
+- [] DB Design
+- [] API Design
+- [] User Management
+- [] Event Management
+- [] Invitation Management
+- [] Sprint 2 Demo
+- [] Notification
+- [] Feedback
+- [] Calendar API Integration
+- [] Internal Review
+- [] Final Demo
