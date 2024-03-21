@@ -7,18 +7,14 @@ const router = express.Router();
 const userController = container.resolve(UserController);
 
 router.post('/', userController.createUser.bind(userController));
-/**
- * @swagger
- * tags:
- *   name: Users
- *   description: User management APIs
- */
 
 /**
  * @swagger
  * /api/v1/users:
  *   get:
  *     summary: Get all users
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Users]
  *     description: Retrieve a list of all users
  *     responses:
@@ -27,9 +23,14 @@ router.post('/', userController.createUser.bind(userController));
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                  $ref: '#/components/schemas/User'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
  */
 router.get('/', userController.getUsers.bind(userController));
 /**
@@ -37,6 +38,8 @@ router.get('/', userController.getUsers.bind(userController));
  * /api/v1/users/{userId}:
  *   get:
  *     summary: Get a user by ID
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Users]
  *     description: Retrieve a user by their ID
  *     parameters:
@@ -48,11 +51,16 @@ router.get('/', userController.getUsers.bind(userController));
  *         description: Numeric ID of the user to retrieve
  *     responses:
  *       200:
- *         description: A single user object
+ *         description: A object of user
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
  *       404:
  *         description: User not found
  */
@@ -62,6 +70,8 @@ router.get('/:userId', userController.getUserById.bind(userController));
  * /api/v1/users/{userId}:
  *   patch:
  *     summary: Update a user by ID
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Users]
  *     description: Update a user's information by their ID
  *     parameters:
@@ -79,11 +89,16 @@ router.get('/:userId', userController.getUserById.bind(userController));
  *             $ref: '#/components/requestBodies/updateRequest'
  *     responses:
  *       200:
- *         description: User updated successfully
+ *         description: A object of user
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
  *       404:
  *         description: User not found
  */
@@ -93,6 +108,8 @@ router.patch('/:userId', checkAuthorization, userController.updateUser.bind(user
  * /users/{userId}:
  *   delete:
  *     summary: Delete a user by ID
+ *     security:
+ *       - bearerAuth: []
  *     tags: [Users]
  *     description: Endpoint to delete a user by ID.
  *     parameters:

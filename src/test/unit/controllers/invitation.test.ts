@@ -11,6 +11,7 @@ import { User } from '../../../entities/users';
 import { Event } from '../../../entities/events';
 import { sendSuccess } from '../../../utils/sendResponse';
 import { getAuthUserId } from '../../../utils/common';
+import { NotificationService } from '../../../services/notificationService';
 
 jest.mock('../../../utils/common', () => ({
     ...jest.requireActual('../../../utils/common'),
@@ -39,7 +40,7 @@ describe('InvitationController', () => {
   };
 
   beforeEach(() => {
-    invitationServiceMock = new InvitationService(new UserService(),new EventService(), new MailService()) as jest.Mocked<InvitationService>;
+    invitationServiceMock = new InvitationService(new UserService(),new EventService(), new MailService(),new NotificationService()) as jest.Mocked<InvitationService>;
     invitationController = new InvitationController(invitationServiceMock);
     req = {};
     res = {};

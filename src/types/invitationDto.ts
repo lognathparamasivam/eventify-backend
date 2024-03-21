@@ -35,6 +35,6 @@ export const CreateInvitationDtoSchema = z.object({
 export const UpdateInvitationDtoSchema = z.object({
   rsvp: RSVPQuestionSchema.optional(),
   rsvpResponse: RSVPResponseSchema.optional(),
-  userIds: z.array(z.number()).optional(),
+  userIds: z.array(z.number()),
   eventId: z.number(),
 });

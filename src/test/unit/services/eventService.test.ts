@@ -39,7 +39,8 @@ const mockEvent: Event = {
     userId: userId,
     invitations: [],
     id: 0,
-    media: new EventMedia()
+    media: new EventMedia(),
+    feedbacks: []
 };
 
 describe('EventService', () => {
@@ -89,7 +90,8 @@ describe('EventService', () => {
                 user: new User(),
                 invitations: [],
                 media: new EventMedia(),
-                location: ""
+                location: "",
+                feedbacks: []
             };
 
             (eventRepository.findOneBy as jest.Mock).mockResolvedValue(existingEvent);

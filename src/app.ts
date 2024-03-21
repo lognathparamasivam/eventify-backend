@@ -10,6 +10,9 @@ import { passportConfig } from './middleware/passportConfig';
 import userRoute from './routes/users';
 import eventRoute from './routes/events';
 import invitationRoute from './routes/invitations';
+import notificationRoute from './routes/notifications';
+import feedbackRoute from './routes/feedbacks';
+
 import specs from '../swaggerConfig';
 import swaggerUi from 'swagger-ui-express';
 
@@ -49,6 +52,8 @@ app.get("/error", (req, res) => {
   app.use("/api/v1/users", authenticateToken, userRoute);
   app.use("/api/v1/events", authenticateToken, eventRoute);
   app.use("/api/v1/invitations", authenticateToken, invitationRoute);
+  app.use("/api/v1/notifications", authenticateToken, notificationRoute);
+  app.use("/api/v1/feedbacks", authenticateToken, feedbackRoute);
 
 databaseConnect();
 

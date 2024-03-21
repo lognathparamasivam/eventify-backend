@@ -17,6 +17,18 @@ const options: swaggerJsdoc.Options = {
                 name: 'Events',
                 description: 'Event management APIs',
             },
+            {
+                name: 'Invitations',
+                description: 'Invitation management APIs',
+            },
+            {
+                name: 'Notifications',
+                description: 'Notification APIs',
+            },
+            {
+                name: 'Feedbacks',
+                description: 'Feedbacks APIs',
+            },
         ],
         servers: [
             {
@@ -25,6 +37,13 @@ const options: swaggerJsdoc.Options = {
             },
         ],
         components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT'
+                }
+            },
             schemas: {
                 User: {
                     type: 'object',
@@ -67,24 +86,154 @@ const options: swaggerJsdoc.Options = {
                             }
                         },
                     }
+                },
+                Notification: {
+                    type: "object",
+                    properties: {
+                        id: {
+                            type: "integer",
+                            description: "The unique identifier of the notification",
+                        },
+                        createdAt: {
+                            type: "string",
+                            format: "date-time",
+                            description: "The date and time when the notification was created"
+                        },
+                        updatedAt: {
+                            type: "string",
+                            format: "date-time",
+                            description: "The date and time when the notification was last updated"
+                        },
+                        deletedAt: {
+                            type: "string",
+                            format: "date-time",
+                            description: "The date and time when the notification was deleted (if applicable)"
+                        },
+                        message: {
+                            type: "string",
+                            description: "The content of the notification message"
+                        },
+                        userId: {
+                            type: "integer",
+                            description: "The ID of the user to whom the notification belongs"
+                        },
+                        read: {
+                            type: "integer",
+                            description: "Indicates whether the notification has been read (0 for unread, 1 for read)"
+                        }
+                    }
+                },
+                Invitation: {
+                    type: "object",
+                    properties: {
+                        id: {
+                            type: "integer",
+                            description: "The unique identifier of the Invitation",
+                        },
+                        createdAt: {
+                            type: "string",
+                            format: "date-time",
+                            description: "The date and time when the Invitation was created"
+                        },
+                        updatedAt: {
+                            type: "string",
+                            format: "date-time",
+                            description: "The date and time when the Invitation was last updated"
+                        },
+                        deletedAt: {
+                            type: "string",
+                            format: "date-time",
+                            description: "The date and time when the Invitation was deleted (if applicable)"
+                        },
+                        status: {
+                            type: "string",
+                            enum: ['PENDING', 'ACCEPTED', 'REJECTED'],
+                            description: "The invitation response status of participant user"
+                        },
+                        checkin: {
+                            type: "integer",
+                            description: "The checkin status of participant user"
+                        },
+                        checkinTime: {
+                            type: "string",
+                            format: "date-time",
+                            description: "The date and time when the User checkin"
+                        },
+                        rsvp: {
+                            type: "object",
+                            properties: {
+                                title: {
+                                    type: "string",
+                                    description: "Title of Custom RSVP"
+                                }
+                            }
+                        },
+                        rsvpResponse: {
+                            type: "object",
+                            properties: {
+                                options: {
+                                    type: "boolean",
+                                    description: "Response options for the given rsvp"
+                                }
+                            }
+                        },
+                        userId: {
+                            type: "integer",
+                            description: "The ID of the user to whom the feedback belongs"
+                        },
+                        eventId: {
+                            type: "integer",
+                            description: "The ID of the event to which the feedback belongs"
+                        }
+                    }
+                },
+                Feedback: {
+                    type: "object",
+                    properties: {
+                        id: {
+                            type: "integer",
+                            description: "The unique identifier of the notification",
+                        },
+                        createdAt: {
+                            type: "string",
+                            format: "date-time",
+                            description: "The date and time when the feedback was created"
+                        },
+                        updatedAt: {
+                            type: "string",
+                            format: "date-time",
+                            description: "The date and time when the feedback was last updated"
+                        },
+                        deletedAt: {
+                            type: "string",
+                            format: "date-time",
+                            description: "The date and time when the feedback was deleted (if applicable)"
+                        },
+                        comment: {
+                            type: "string",
+                            description: "The content of the feedback message"
+                        },
+                        userId: {
+                            type: "integer",
+                            description: "The ID of the user to whom the feedback belongs"
+                        },
+                        eventId: {
+                            type: "integer",
+                            description: "The ID of the event to which the feedback belongs"
+                        }
+                    }
                 }
             },
             requestBodies: {
                 createEventRequest: {
-                    content: {
-                        'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    title: { type: 'string' },
-                                    description: { type: 'string' },
-                                    startDate: { type: 'string', format: 'date-time' },
-                                    endDate: { type: 'string', format: 'date-time' },
-                                },
-                                required: ['title', 'description', 'startDate', 'endDate'],
-                            },
-                        },
+                    type: 'object',
+                    properties: {
+                        title: { type: 'string' },
+                        description: { type: 'string' },
+                        startDate: { type: 'string', format: 'date-time' },
+                        endDate: { type: 'string', format: 'date-time' },
                     },
+                    required: ['title', 'description', 'startDate', 'endDate'],
                 },
                 updateRequest: {
                     type: 'object',
@@ -96,32 +245,85 @@ const options: swaggerJsdoc.Options = {
                     },
                 },
                 updateEventRequest: {
-                    description: 'Update Event Request',
-                    required: true,
-                    content: {
-                        'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    title: { type: 'string', description: 'The updated title of the event.' },
-                                    description: { type: 'string', description: 'The updated description of the event.' },
-                                    startDate: { type: 'string', format: 'date-time', description: 'The updated start date and time of the event.' },
-                                    endDate: { type: 'string', format: 'date-time', description: 'The updated end date and time of the event.' },
-                                    location: { type: 'string', description: 'The updated location of the event.' },
-                                    media: {
-                                        type: 'object',
-                                        properties: {
-                                            images: { type: 'array', items: { type: 'string', format: 'uri' }, description: 'The updated URLs of the images associated with the event.' },
-                                            videos: { type: 'array', items: { type: 'string', format: 'uri' }, description: 'The updated URLs of the videos associated with the event.' },
-                                            documents: { type: 'array', items: { type: 'string', format: 'uri' }, description: 'The updated URLs of the documents associated with the event.' }
-                                        }
-                                    }
-                                },
-                                additionalProperties: false
+                    type: 'object',
+                    properties: {
+                        title: { type: 'string', description: 'The updated title of the event.' },
+                        description: { type: 'string', description: 'The updated description of the event.' },
+                        startDate: { type: 'string', format: 'date-time', description: 'The updated start date and time of the event.' },
+                        endDate: { type: 'string', format: 'date-time', description: 'The updated end date and time of the event.' },
+                        location: { type: 'string', description: 'The updated location of the event.' },
+                        media: {
+                            type: 'object',
+                            properties: {
+                                images: { type: 'array', items: { type: 'string', format: 'uri' }, description: 'The updated URLs of the images associated with the event.' },
+                                videos: { type: 'array', items: { type: 'string', format: 'uri' }, description: 'The updated URLs of the videos associated with the event.' },
+                                documents: { type: 'array', items: { type: 'string', format: 'uri' }, description: 'The updated URLs of the documents associated with the event.' }
                             }
                         }
-                    }
-                }
+                    },
+                    additionalProperties: false
+                },
+                createFeedbackRequest: {
+                    type: 'object',
+                    properties: {
+                        comment: { type: 'integer' },
+                        userId: { type: 'integer' },
+                        eventId: { type: 'integer' },
+                    },
+                    required: ['comment', 'userId', 'eventId'],
+                },
+                createInvitationRequest: {
+                    type: 'object',
+                    properties: {
+                        rsvp: {
+                            type: "object",
+                            properties: {
+                                title: {
+                                    type: "string",
+                                    description: "Title of Custom RSVP"
+                                }
+                            }
+                        },
+                        rsvpResponse: {
+                            type: "object",
+                            properties: {
+                                options: {
+                                    type: "boolean",
+                                    description: "Response options for the given rsvp"
+                                }
+                            }
+                        },
+                        userIds: { type: 'array', items: { type: 'integer'} },
+                        eventId: { type: 'integer' },
+                    },
+                    required: ['rsvp', 'rsvpResponse', 'eventId', 'userIds'],
+                },
+                updateInvitationRequest: {
+                    type: 'object',
+                    properties: {
+                        rsvp: {
+                            type: "object",
+                            properties: {
+                                title: {
+                                    type: "string",
+                                    description: "Title of Custom RSVP"
+                                }
+                            }
+                        },
+                        rsvpResponse: {
+                            type: "object",
+                            properties: {
+                                options: {
+                                    type: "boolean",
+                                    description: "Response options for the given rsvp"
+                                }
+                            }
+                        },
+                        userIds: { type: 'array', items: { type: 'integer'} },
+                        eventId: { type: 'integer' },
+                    },
+                    required: ['eventId', 'userIds'],
+                },
             },
             responses: {
                 successResponse: {
@@ -145,6 +347,26 @@ const options: swaggerJsdoc.Options = {
                         data: {
                             type: 'array',
                             items: { $ref: '#/components/schemas/Event' },
+                        }
+                    },
+                },
+                feedbackResponse: {
+                    type: 'object',
+                    properties: {
+                        success: { type: 'boolean', description: 'Indicates whether the request was successful or not.' },
+                        data: {
+                            type: 'array',
+                            items: { $ref: '#/components/schemas/Feedback' },
+                        }
+                    },
+                },
+                invitationResponse: {
+                    type: 'object',
+                    properties: {
+                        success: { type: 'boolean', description: 'Indicates whether the request was successful or not.' },
+                        data: {
+                            type: 'array',
+                            items: { $ref: '#/components/schemas/Invitation' },
                         }
                     },
                 },

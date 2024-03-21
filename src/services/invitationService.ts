@@ -11,12 +11,13 @@ import { InvitationStatus } from '../types/invitationStatus';
 import { FilterDto } from '../types/filterDto';
 import { applyFilters, isFilterParamsValid } from '../utils/common';
 import constants from '../utils/constants';
+import { NotificationService } from './notificationService';
 
 @injectable()
 export class InvitationService {
 
   constructor(private readonly userService: UserService,private readonly eventService: EventService,
-    private readonly mailService:MailService) {}
+    private readonly mailService:MailService, private readonly notificationService: NotificationService) {}
 
 
   async createInvitation(createInvitationDto: CreateInvitationDto,userId: number): Promise<Invitation[]> {
@@ -28,7 +29,7 @@ export class InvitationService {
       })
     }
     const userIdSet = new Set(createInvitationDto.userIds);
-    
+
     const invitations: Invitation[] = [];
     const usersEmail: string[] = [];
     for (const userId of userIdSet) {
@@ -49,6 +50,13 @@ export class InvitationService {
       usersEmail.push(user!.email);
     }
     const invites = await invitationRepository.save(invitations);
+    for(const invite of invites){
+      await this.notificationService.createNotification({
+        message: `You have been Invited for Event ${event!.title} on ${event!.startDate}`,
+        userId: invite!.userId,
+        read: 0
+      });
+    }
     for (const email of usersEmail) {
       this.sendInvitation(event!,email,invitations[0])
     }
@@ -78,8 +86,8 @@ export class InvitationService {
       const invitations: Invitation[] = await invitationRepository.findBy({ eventId: updateInvitationDto.eventId })
       const existingUserIds: Set<number> = new Set(invitations.map(invitation => invitation.userId));
 
-    const userIdsToAdd: number[] = updateInvitationDto.userIds.filter(userId => !existingUserIds.has(userId));
-    const userIdsToRemove: number[] = Array.from(existingUserIds).filter(userId => !updateInvitationDto.userIds.includes(userId));
+      const userIdsToAdd: number[] = updateInvitationDto.userIds.filter(userId => !existingUserIds.has(userId));
+      const userIdsToRemove: number[] = Array.from(existingUserIds).filter(userId => !updateInvitationDto.userIds.includes(userId));
 
     for (const userId of userIdsToAdd) {
       const newInvitation = new Invitation();
@@ -87,6 +95,11 @@ export class InvitationService {
       newInvitation.userId = userId;
       newInvitation.rsvp = updateInvitationDto.rsvp;
       newInvitation.rsvpResponse = updateInvitationDto.rsvpResponse;
+      await this.notificationService.createNotification({
+        message: `You have been Invited for Event ${event!.title} on ${event!.startDate}`,
+        userId: userId,
+        read: 0
+      });
       await invitationRepository.save(newInvitation);
     }
     
@@ -99,6 +112,11 @@ export class InvitationService {
     }
 
     for (const userId of userIdsToRemove) {
+      await this.notificationService.createNotification({
+        message: `You have been Removed from Event ${event!.title} on ${event!.startDate}`,
+        userId: userId,
+        read: 0
+      });
       const invitationToRemove = invitations.find(invitation => invitation.userId === userId);
       if (invitationToRemove) {
         await invitationRepository.delete(invitationToRemove.id);
@@ -173,9 +191,6 @@ export class InvitationService {
   }
 
   async checkIn(invitationId: number, userId: number): Promise<Invitation | null> {
-    console.log('invitationId '+invitationId)
-    console.log('userId '+userId)
-
     const invitation = await invitationRepository.findOne({
       where: {
         id: invitationId,
@@ -188,8 +203,7 @@ export class InvitationService {
         message: 'Invitation not found'
       })
     }
-    console.log('invitation '+JSON.stringify(invitation))
-    if(invitation?.checkin == 1){
+    if (invitation?.checkin == 1) {
       throwError({
         errorCategory: 'BAD_REQUEST',
         message: 'Already Checked In'
@@ -202,20 +216,21 @@ export class InvitationService {
 
   async sendInvitation(event: Event, userEmail:string, invitation: Invitation): Promise<void> {
     try{
-      
-      const rsvpButtons = Object.entries(invitation.rsvpResponse.options)
-      .map(([key, value]) => `<button onclick="handleRSVP('${key}')">${value}</button>`)
-      .join('<br>');
+      if(invitation){
+        const rsvpButtons = Object.entries(invitation.rsvpResponse.options)
+        .map(([key, value]) => `<button onclick="handleRSVP('${key}')">${value}</button>`)
+        .join('<br>');
+    
+        const subject = `Invitation to ${event.title}`;
+        const htmlContent = `
+          <p>Hello,</p>
+          <p>You are invited to attend ${event.title}! at ${event.startDate}</p>
+          <p>${invitation.rsvp.title}</p>
+          ${rsvpButtons}
+        `;
   
-      const subject = `Invitation to ${event.title}`;
-      const htmlContent = `
-        <p>Hello,</p>
-        <p>You are invited to attend ${event.title}! at ${event.startDate}</p>
-        <p>${invitation.rsvp.title}</p>
-        ${rsvpButtons}
-      `;
-  
-      await this.mailService.sendMail(userEmail, subject, htmlContent);
+        await this.mailService.sendMail(userEmail, subject, htmlContent);
+      }
     }
     catch(err){
       console.log(err);
@@ -246,13 +261,17 @@ export class InvitationService {
       },
       relations: ['event']
     });
-    console.log(JSON.stringify(invitation))
     if (!invitation) {
       throwError({
         errorCategory: 'RESOURCE_NOT_FOUND',
         message: 'Invitation not found'
       })
     }
+    await this.notificationService.createNotification({
+      message: `You have an Event ${invitation?.event.title} on ${invitation?.event.startDate}`,
+      userId: invitation!.userId,
+      read: 0
+    });
   }
 
 }
