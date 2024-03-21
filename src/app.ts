@@ -10,11 +10,15 @@ import { passportConfig } from './middleware/passportConfig';
 import userRoute from './routes/users';
 import eventRoute from './routes/events';
 import invitationRoute from './routes/invitations';
+import specs from '../swaggerConfig';
+import swaggerUi from 'swagger-ui-express';
 
 const app = express();
 const port = properties.port;
 
 app.use(express.json());
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.get('/', (req, res) => {
     res.send('Welcome to Eventify');

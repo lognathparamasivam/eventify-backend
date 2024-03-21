@@ -10,6 +10,12 @@ Eventify is a comprehensive Event Planning and Management System that allows use
 - **User-friendly RSVP Process**: Provide a user-friendly RSVP and registration process, allowing attendees to confirm attendance, provide additional details, and access event-specific information seamlessly.
 - **Integration with Calendars**: Support integration with calendars, allowing users to synchronize event schedules with their preferred calendar applications.
 
+## How to Use
+
+### Prerequisites
+
+- Node.js installed on your machine
+- NPM package manager
 
 ## Installation
 
@@ -22,3 +28,12 @@ Eventify is a comprehensive Event Planning and Management System that allows use
 - **Lint Code**: `npm run lint`
 - **Clean Build**: `npm run clean`
 - **Run Tests**: `npm test`
+- **Docker Build**: `npm run docker:build`
+- **Docker Run**: `npm run docker:run`
+
+
+## API Documentation
+
+The API documentation is provided in the Swagger format. You can access it by visiting the following URL:
+
+[API Documentation](http://localhost:3000/api-docs)
