@@ -1,11 +1,16 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import properties from '../properties';
-import { AuthenticatedUser } from '../types/AuthenticatedUser';
+import { AuthenticatedUser } from '../types/authenticatedUser';
 import logger from '../logger';
 import constants from '../utils/constants';
+import { EventService } from '../services/eventService';
+import { Event } from '../entities/events';
+import { sendError } from '../utils/sendResponse';
+import { container } from 'tsyringe';
 
 const SECRET_KEY = properties.secretKey;
+const eventService: EventService = container.resolve(EventService);
 
 export function authenticateToken(req: Request, res: Response, next: NextFunction) {
 
@@ -53,5 +58,26 @@ export function checkAuthorization(req: Request, res: Response, next: NextFuncti
     })
   }
   next();
+}
+
+export async function checkEventOrganizer(req: Request, res: Response, next: NextFunction) {
+  const tokenUserId = Number((req.user as AuthenticatedUser).user_id);
+  const eventId = Number(req.body.eventId ?? req.params.eventId); 
+  await eventService.getEventById(eventId,tokenUserId).then((result: Event | null) => {
+    if (tokenUserId !== result?.userId) {
+      return res.status(403).json({
+        success: false,
+        error: {
+          error: true,
+          message: "Forbidden",
+          path: req.baseUrl,
+        },
+      })
+    }
+    next();
+  })
+  .catch((error) => {
+    sendError(req, res, error);
+  });
 }
 

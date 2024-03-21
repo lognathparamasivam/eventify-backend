@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import { GoogleUser } from '../types/googleUser';
-import { UserService } from '../services/UserService';
+import { UserService } from '../services/userService';
 import properties from '../properties';
 import { sendError, sendSuccess } from '../utils/sendResponse';
 import logger from '../logger';
@@ -30,14 +30,10 @@ router.get('/google/callback',
     let userResult = await userService.findByEmail(email);
     if(!userResult){
       userResult = await userService.createUser({
-        id: 0, 
-        mobileNo: '', 
         firstName: user._json.given_name,
         lastName: user._json.family_name,
         email: user._json.email,
         imageUrl: user._json.picture,
-        createdAt: new Date(),
-        updatedAt: null,
       });
     }
 

@@ -1,158 +1,107 @@
 import 'reflect-metadata';
 import { Request, Response } from 'express';
-import { UserController } from '../../../controllers/users';
 import { User } from '../../../entities/users';
-import { UserService } from '../../../services/UserService';
-import { sendError, sendSuccess } from '../../../utils/sendResponse';
+import { CreateUserDto, UpdateUserDto } from '../../../types/userDto';
+import { sendSuccess } from '../../../utils/sendResponse';
+import { UserController } from '../../../controllers/users';
+import { UserService } from '../../../services/userService';
+
+jest.mock('../../../services/userService');
 jest.mock('../../../utils/sendResponse');
 
-jest.mock('../../../services/UserService')
-
-describe('UserController Unit Test', () => {
+describe('UserController', () => {
   let userController: UserController;
-  let mockRequest: Partial<Request>;
-  let mockResponse: Partial<Response>;
+  let userServiceMock: jest.Mocked<UserService>;
+  let req: Partial<Request>;
+  let res: Partial<Response>;
+
   const mockUser: User = {
     id: 5,
     firstName: 'Lognath',
     lastName: 'Paramashivam',
-    email: 'lognathparamashivam@gmails.com',
+    email: 'lognathparamashivam@gmail.com',
     mobileNo: '',
-    imageUrl: 'dummyUrl',
-    createdAt: new Date('2024-03-10T04:44:13.000Z'),
-    updatedAt: null,
+    imageUrl: 'https://lh3.googleusercontent.com/a/ACg8ocJw0SrJU8rFEKH-2-3EPV9Abeww-z2n2mSy4gNHfwOeOPY=s96-c',
+    events: [],
+    invitations: [],
   };
-  const mockUpdatedUser: User = {
-    id: 5,
-    firstName: 'Loganathan',
+
+  const mockCreateUserDto: CreateUserDto = {
+    firstName: 'Lognath',
     lastName: 'Paramashivam',
-    email: 'lognathparamashivam@gmails.com',
-    mobileNo: '',
-    imageUrl: 'dummyUrl',
-    createdAt: new Date('2024-03-10T04:44:13.000Z'),
-    updatedAt: new Date('2024-03-12T04:44:13.000Z'),
+    email: 'lognathparamashivam@gmail.com',
+  };
+
+  const mockUpdateUserDto: UpdateUserDto = {
+    firstName: 'Loganathan',
+    mobileNo: '9965861660',
   };
 
   beforeEach(() => {
-    userController = new UserController();
-    mockRequest = {} as Partial<Request>;
-    mockResponse = {
-      status: jest.fn(() => mockResponse), 
-      send: jest.fn(),
-    } as Partial<Response>;
+    userServiceMock = new UserService() as jest.Mocked<UserService>;
+    userController = new UserController(userServiceMock);
+    req = {};
+    res = {};
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
   describe('createUser', () => {
-  it('should create a user', async () => {
-   
-    const createUserMock = jest.spyOn(UserService.prototype, 'createUser').mockResolvedValue(mockUser);
+    it('should create a new user', async () => {
+      req.body = mockCreateUserDto;
+      userServiceMock.createUser.mockResolvedValue(mockUser);
 
-    mockRequest.body = { id: 5,
-      firstName: 'Lognath',
-      lastName: 'Paramashivam', };
+      await userController.createUser(req as Request, res as Response);
 
-    await userController.createUser(mockRequest as Request, mockResponse as Response);
-
-    expect(createUserMock).toHaveBeenCalledWith(mockRequest.body);
-    expect(sendSuccess).toHaveBeenCalledWith(mockRequest as Request, mockResponse as Response, mockUser);
+      expect(userServiceMock.createUser).toHaveBeenCalledWith(mockCreateUserDto);
+      expect(sendSuccess).toHaveBeenCalledWith(req, res, mockUser);
+    });
   });
 
-  it('should handle error while creating user', async () => {
-    const mockError = new Error('User creation failed');
-    const createUserMock = jest.spyOn(UserService.prototype, 'createUser').mockRejectedValue(mockError);
-
-    mockRequest.body = { id: 5,
-      firstName: 'Lognath',
-      lastName: 'Paramashivam', };
-
-    await userController.createUser(mockRequest as Request, mockResponse as Response);
-
-    expect(createUserMock).toHaveBeenCalledWith(mockRequest.body);
-    expect(sendError).toHaveBeenCalledWith(mockRequest as Request, mockResponse as Response, mockError);
-  });
-});
   describe('getUsers', () => {
-    it('should get users', async () => {
-      const mockUsers = [mockUser];
-        const getUsersMock = jest.spyOn(UserService.prototype, 'getUsers').mockResolvedValue(mockUsers);
-  
-        await userController.getUsers(mockRequest as Request, mockResponse as Response);
-  
-        expect(getUsersMock).toHaveBeenCalled();
-        expect(sendSuccess).toHaveBeenCalledWith(mockRequest as Request, mockResponse as Response, mockUsers);
-    });
-    
-    it('should handle error while getting users', async () => {
-      const mockError = new Error('Failed to get users');
-      const getUsersMock = jest.spyOn(UserService.prototype, 'getUsers').mockRejectedValue(mockError);
+    it('should return an array of users', async () => {
+      const mockUsers: User[] = [mockUser];
+      userServiceMock.getUsers.mockResolvedValue(mockUsers);
 
-      await userController.getUsers(mockRequest as Request, mockResponse as Response);
+      await userController.getUsers(req as Request, res as Response);
 
-      expect(getUsersMock).toHaveBeenCalled();
-      expect(sendError).toHaveBeenCalledWith(mockRequest as Request, mockResponse as Response, mockError);
-
+      expect(userServiceMock.getUsers).toHaveBeenCalled();
+      expect(sendSuccess).toHaveBeenCalledWith(req, res, mockUsers);
     });
   });
 
-  
+  describe('getUserById', () => {
+    it('should return a user by ID', async () => {
+      req.params = { userId: '5' };
+      userServiceMock.getUserById.mockResolvedValue(mockUser);
 
-  describe('getUserBy Id', () => {
-  it('should get a user by ID successfully', async () => {
-    const userId = 1;
-    const getUserByIdMock = jest.spyOn(UserService.prototype, 'getUserById').mockResolvedValue(mockUser);
+      await userController.getUserById(req as Request, res as Response);
 
-    mockRequest.params = { id: userId.toString() };
-
-    await userController.getUserById(mockRequest as Request, mockResponse as Response);
-
-    expect(getUserByIdMock).toHaveBeenCalledWith(userId);
-    expect(sendSuccess).toHaveBeenCalledWith(mockRequest as Request, mockResponse as Response, mockUser);
+      expect(userServiceMock.getUserById).toHaveBeenCalledWith(5);
+      expect(sendSuccess).toHaveBeenCalledWith(req, res, mockUser);
+    });
   });
-
-  it('should handle error while getting user by ID', async () => {
-    const userId = 1;
-    const mockError = new Error('Failed to get user by ID');
-    const getUserByIdMock = jest.spyOn(UserService.prototype, 'getUserById').mockRejectedValue(mockError);
-
-    mockRequest.params = { id: userId.toString() };
-
-    await userController.getUserById(mockRequest as Request, mockResponse as Response);
-
-    expect(getUserByIdMock).toHaveBeenCalledWith(userId);
-    expect(sendError).toHaveBeenCalledWith(mockRequest as Request, mockResponse as Response, mockError);
-  });
-});
 
   describe('updateUser', () => {
-  it('should update a user successfully', async () => {
-    const userId = 1;
-    const updateUserMock = jest.spyOn(UserService.prototype, 'updateUser').mockResolvedValue(mockUpdatedUser);
+    it('should update a user', async () => {
+      req.params = { userId: '5' };
+      req.body = mockUpdateUserDto;
+      userServiceMock.updateUser.mockResolvedValue(mockUser);
 
-    mockRequest.params = { id: userId.toString() };
-    mockRequest.body = { firstName: 'Loganathan' };
+      await userController.updateUser(req as Request, res as Response);
 
-    await userController.updateUser(mockRequest as Request, mockResponse as Response);
-
-    expect(updateUserMock).toHaveBeenCalledWith(userId, mockRequest.body);
-    expect(sendSuccess).toHaveBeenCalledWith(mockRequest as Request, mockResponse as Response, mockUpdatedUser);
+      expect(userServiceMock.updateUser).toHaveBeenCalledWith(5, mockUpdateUserDto);
+      expect(sendSuccess).toHaveBeenCalledWith(req, res, mockUser);
+    });
   });
 
-  it('should handle error while updating user', async () => {
-    const userId = 1;
-    const mockError = new Error('Failed to update user');
-    const updateUserMock = jest.spyOn(UserService.prototype, 'updateUser').mockRejectedValue(mockError);
+  describe('deleteUser', () => {
+    it('should delete a user', async () => {
+      req.params = { userId: '5' };
+      userServiceMock.deleteUser.mockResolvedValue(undefined);
 
-    mockRequest.params = { id: userId.toString() };
-    mockRequest.body = { firstName: 'Loganathan' };
+      await userController.deleteUser(req as Request, res as Response);
 
-    await userController.updateUser(mockRequest as Request, mockResponse as Response);
-
-    expect(updateUserMock).toHaveBeenCalledWith(userId, mockRequest.body);
-    expect(sendError).toHaveBeenCalledWith(mockRequest as Request, mockResponse as Response, mockError);
-  });
-
+      expect(userServiceMock.deleteUser).toHaveBeenCalledWith(5);
+      expect(sendSuccess).toHaveBeenCalledWith(req, res);
+    });
   });
 });

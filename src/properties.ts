@@ -1,5 +1,8 @@
 import dotenv from "dotenv";
-dotenv.config();
+
+const envFile = process.env.NODE_ENV === 'production' ? '.env.prod' :
+                 process.env.NODE_ENV === 'test' ? '.env.test' : '.env.dev';
+dotenv.config({ path: envFile });
 
 const properties = {
   env: process.env.NODE_ENV ?? "dev",
@@ -14,7 +17,9 @@ const properties = {
   dbPassword: process.env.DB_PASSWORD ?? "",
   dbDatabase: process.env.DB_DATABASE ?? "",
   ormLogging: Boolean(process.env.ORM_LOGGING) || true,
-  jwtExpiry: process.env.JWT_TOKEN_EXPIRY
+  jwtExpiry: process.env.JWT_TOKEN_EXPIRY,
+  mailProviderId: process.env.MAIL_PROVIDER_ID,
+  mailProviderPassword: process.env.MAIL_PROVIDER_PASSWORD,
 };
 
 export default properties;
