@@ -25,8 +25,8 @@ export class InvitationController {
 
   async updateInvitation(req: Request, res: Response): Promise<void> {
     const updateInvitationDto = req.body;
-    const invitationId: number = parseInt(req.params.invitationId);
-    await this.invitationService.updateInvitation(invitationId,updateInvitationDto,getAuthUserId(req)).then((results: Invitation[]) => {
+    await this.invitationService.updateInvitation(updateInvitationDto,getAuthUserId(req))
+    .then((results: Invitation[]) => {
       sendSuccess(req, res, results);
     })
     .catch((error) => {

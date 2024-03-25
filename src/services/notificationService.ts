@@ -6,7 +6,7 @@ import { Notification } from '../entities/notifications';
 
 @injectable()
 export class NotificationService {
-  
+
   async createNotification(notification: CreateNotificationDto): Promise<Notification> {
     return await notificationRepository.save(notification);
   }
@@ -15,18 +15,20 @@ export class NotificationService {
     return await notificationRepository.find({
       where: {
         userId: userId
+      }, order: {
+        id: 'DESC'
       }
     });
   }
 
-  async getNotificationById(notificationId: number,userId: number): Promise<Notification | null> {
+  async getNotificationById(notificationId: number, userId: number): Promise<Notification | null> {
     const notification = await notificationRepository.findOne({
       where: {
         id: notificationId,
         userId: userId
       }
     })
-    if(!notification){
+    if (!notification) {
       throwError({
         errorCategory: 'RESOURCE_NOT_FOUND',
         message: 'Notification not found'
@@ -35,14 +37,14 @@ export class NotificationService {
     return notification;
   }
 
-  async updateNotification(notificationId: number,userId: number, updateNotificationData: UpdateNotificationDto): Promise<Notification> {
+  async updateNotification(notificationId: number, userId: number, updateNotificationData: UpdateNotificationDto): Promise<Notification> {
     const notification = await notificationRepository.findOne({
       where: {
         id: notificationId,
         userId: userId
       }
     })
-    if(!notification){
+    if (!notification) {
       throwError({
         errorCategory: 'RESOURCE_NOT_FOUND',
         message: 'Notification not found'

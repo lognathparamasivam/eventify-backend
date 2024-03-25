@@ -11,8 +11,8 @@ export default Object.freeze({
     404: "RESOURCE_NOT_FOUND",
     500: "INTERNAL_SERVER_ERROR",
   },
-  EVENT_VALID_PARAMS: ['title','startDate'],
-  DEFAULT_QUERY_PARAMS: ["limit", "offset", "sortby"],
+EVENT_VALID_PARAMS: ['title','startDate','calendarId'],
+  DEFAULT_QUERY_PARAMS: ['limit', 'offset', 'sortby'],
   INVITATION_VALID_PARAMS: ['eventId','userId'],
   FEEDBACKS_VALID_PARAMS: ['eventId','userId'],
 

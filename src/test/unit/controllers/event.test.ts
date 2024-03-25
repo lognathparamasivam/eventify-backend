@@ -8,6 +8,7 @@ import { EventMedia } from '../../../entities/eventMedia';
 import { CreateEventDto, UpdateEventDto } from '../../../types/eventDto';
 import { sendSuccess } from '../../../utils/sendResponse';
 import { getAuthUserId } from '../../../utils/common';
+import { EventStatus } from '../../../types/eventStatus';
 
 jest.mock('../../../utils/common', () => ({
     ...jest.requireActual('../../../utils/common'),
@@ -33,7 +34,9 @@ describe('EventController', () => {
     location: '',
     media: new EventMedia(),
     id: 0,
-    feedbacks: []
+    feedbacks: [],
+    calendarId: '',
+    status: EventStatus.CONFIRMED
   };
 
   const mockCreateEventDto: CreateEventDto = {

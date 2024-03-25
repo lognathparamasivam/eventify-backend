@@ -9,6 +9,7 @@ import { Event } from '../entities/events';
 import { sendError } from '../utils/sendResponse';
 import { container } from 'tsyringe';
 import { InvitationService } from '../services/invitationService';
+import { Invitation } from '../entities/invitations';
 
 const SECRET_KEY = properties.secretKey;
 const eventService: EventService = container.resolve(EventService);
@@ -50,7 +51,7 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
 
 export function checkAuthorization(req: Request, res: Response, next: NextFunction) {
   const tokenUserId = Number((req.user as AuthenticatedUser).user_id);
-  const requestedUserId = Number(req.params.id); 
+  const requestedUserId = Number(req.params.userId); 
   if (tokenUserId !== requestedUserId) {
     return res.status(constants.FORBIDDEN).json({
       success: false,
@@ -98,6 +99,30 @@ export async function checkFeedbackAuthorized(req: Request, res: Response, next:
           path: req.baseUrl,
         },
       })
+    }
+    next();
+  })
+  .catch((error) => {
+    sendError(req, res, error);
+  });
+}
+
+
+export async function checkRemindAuthorized(req: Request, res: Response, next: NextFunction) {
+  const tokenUserId = Number((req.user as AuthenticatedUser).user_id);
+  const invitationId = Number(req.params.invitationId); 
+  await invitationService.getInvitationById(invitationId,tokenUserId).then((result: Invitation | null) => {
+    if (result) {
+      if(result.userId === tokenUserId){
+        return res.status(403).json({
+          success: false,
+          error: {
+            error: true,
+            message: "Forbidden",
+            path: req.baseUrl,
+          },
+        })
+      }
     }
     next();
   })

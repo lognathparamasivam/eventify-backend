@@ -4,8 +4,11 @@ import { User } from "../../../entities/users";
 import { eventRepository } from "../../../respositories/eventRepository";
 import { EventService } from "../../../services/eventService";
 import { CreateEventDto, UpdateEventDto } from "../../../types/eventDto";
+import { EventStatus } from "../../../types/eventStatus";
 import { FilterDto } from "../../../types/filterDto";
 
+jest.mock('../../../respositories/tokenRepository');
+jest.mock('../../../services/calendarService');
 
 jest.mock('../../../respositories/eventRepository', () => ({
     eventRepository: {
@@ -40,7 +43,9 @@ const mockEvent: Event = {
     invitations: [],
     id: 0,
     media: new EventMedia(),
-    feedbacks: []
+    feedbacks: [],
+    calendarId: "",
+    status: EventStatus.CONFIRMED
 };
 
 describe('EventService', () => {
@@ -91,7 +96,9 @@ describe('EventService', () => {
                 invitations: [],
                 media: new EventMedia(),
                 location: "",
-                feedbacks: []
+                feedbacks: [],
+                calendarId: "",
+    status: EventStatus.CONFIRMED
             };
 
             (eventRepository.findOneBy as jest.Mock).mockResolvedValue(existingEvent);

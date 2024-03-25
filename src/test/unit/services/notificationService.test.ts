@@ -47,7 +47,13 @@ const updateNotificationData: UpdateNotificationDto = {
 
       const result = await notificationService.getNotifications(userId);
 
-      expect(notificationRepository.find).toHaveBeenCalledWith({ where: { userId } });
+      expect(notificationRepository.find).toHaveBeenCalledWith({
+        where: {
+          userId: userId
+        }, order: {
+          id: 'DESC'
+        }
+      });
       expect(result).toEqual(mockNotifications);
     });
   });

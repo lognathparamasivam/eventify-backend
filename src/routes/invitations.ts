@@ -1,7 +1,7 @@
 import express from 'express';
 import { InvitationController } from '../controllers/invitations';
 import { container } from 'tsyringe';
-import { checkEventOrganizer } from '../middleware/authenticateToken';
+import { checkEventOrganizer, checkRemindAuthorized } from '../middleware/authenticateToken';
 import { validateInvitationData, validateUpdateInvitationData } from '../middleware/dataValidation';
 
 const router = express.Router();
@@ -39,20 +39,13 @@ const invitationController = container.resolve(InvitationController);
 router.post('/',validateInvitationData,checkEventOrganizer, invitationController.createInvitation.bind(invitationController));
 /**
  * @swagger
- * /api/v1/invitations/{invitationId}:
+ * /api/v1/invitations:
  *   patch:
  *     summary: Update an invitation by ID
  *     security:
  *       - bearerAuth: []
  *     tags: [Invitations]
  *     description: Update an invitation's information by its ID.
- *     parameters:
- *       - in: path
- *         name: eventId
- *         schema:
- *           type: integer
- *         required: true
- *         description: Numeric ID of the invitation to update
  *     requestBody:
  *       required: true
  *       content:
@@ -74,7 +67,7 @@ router.post('/',validateInvitationData,checkEventOrganizer, invitationController
  *       404:
  *         description: Invitation not found
  */
-router.patch('/:invitationId',validateUpdateInvitationData,checkEventOrganizer, invitationController.updateInvitation.bind(invitationController));
+router.patch('/',validateUpdateInvitationData,checkEventOrganizer, invitationController.updateInvitation.bind(invitationController));
 /**
  * @swagger
  * /api/v1/invitations:
@@ -167,11 +160,8 @@ router.get('/:invitationId', invitationController.getInvitationById.bind(invitat
  *             type: object
  *             properties:
  *               status:
- *                 type: enum
- *                 items: 
- *                   - 'PENDING'
- *                   - 'ACCEPTED'
- *                   - 'REJECTED'
+ *                 type: string
+ *                 enum: ['PENDING','ACCEPTED','REJECTED','TENTATIVE']
  *                 description: Indicates the respond status of invitation
  *     responses:
  *       200:
@@ -247,6 +237,6 @@ router.patch('/:invitationId/checkin', invitationController.checkIn.bind(invitat
  *       404:
  *         description: Invitation not found
  */
-router.patch('/:invitationId/remind', invitationController.remind.bind(invitationController));
+router.patch('/:invitationId/remind',checkRemindAuthorized, invitationController.remind.bind(invitationController));
 
 export default router;

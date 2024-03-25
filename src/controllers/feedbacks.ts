@@ -14,11 +14,10 @@ export class FeedbackController {
 
   async createFeedback(req: Request, res: Response): Promise<void> {
     const feedback: CreateFeedbackDto = req.body;
-   await this.feedbackService.createFeedback(feedback).then((result: Feedback | null) => {
+   await this.feedbackService.createFeedback(feedback,getAuthUserId(req)).then((result: Feedback | null) => {
     sendSuccess(req, res, result);
     })
     .catch((error) => {
-      console.log(error)
       sendError(req, res, error);
     });
     }
@@ -28,7 +27,6 @@ export class FeedbackController {
       sendSuccess(req, res, results);
     })
     .catch((error) => {
-      console.log(error)
       sendError(req, res, error);
     });
   }

@@ -1,0 +1,34 @@
+name: Build
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Install dependencies
+        run: npm install
+      - name: Install Jest globally
+        run: npm install -g jest
+      - name: Install NYC globally
+        run: npm install -g nyc
+      - name: Run Unit Test
+        run: npm run test:unit
+        env:
+          NODE_ENV: dev
+      - name: Run Integration Test
+        run: npm run test:integration
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}

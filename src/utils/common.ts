@@ -3,6 +3,8 @@ import { AuthenticatedUser } from "../types/authenticatedUser";
 import constants from "./constants";
 import { FindManyOptions, LessThan, LessThanOrEqual, Like, MoreThan, MoreThanOrEqual } from "typeorm";
 import { FilterDto } from "../types/filterDto";
+import { InvitationStatus } from "../types/invitationStatus";
+import { EventStatus } from "../types/eventStatus";
 
 export const getAuthUserId = (req: Request) : number => {
     return (req.user as AuthenticatedUser).user_id;
@@ -71,3 +73,55 @@ export const getAuthUserId = (req: Request) : number => {
 
     return options;
   }
+
+  export const lookupInvitationStatusByResponse = (eventResponseStatus: string): InvitationStatus => {
+    switch (eventResponseStatus) {
+        case 'needsAction':
+            return InvitationStatus.PENDING;
+        case 'declined':
+            return InvitationStatus.REJECTED;
+        case 'tentative':
+            return InvitationStatus.TENTATIVE;
+        case 'accepted':
+            return InvitationStatus.ACCEPTED;
+        default:
+            return InvitationStatus.PENDING;
+    }
+}
+
+export const lookupResponseByInvitationStatus = (invitationStatus: InvitationStatus): string => {
+  switch (invitationStatus) {
+      case InvitationStatus.REJECTED:
+          return 'declined';
+      case InvitationStatus.TENTATIVE:
+          return 'tentative';
+      case InvitationStatus.ACCEPTED:
+          return 'accepted';
+      default:
+          return 'needsAction';
+  }
+}
+
+export const lookupEventStatusByResponse = (eventStatus: string): EventStatus => {
+  switch (eventStatus) {
+      case 'confirmed':
+          return EventStatus.CONFIRMED;
+      case 'tentative':
+          return EventStatus.TENTATIVE;
+      case 'cancelled':
+          return EventStatus.CANCELLED;
+      default:
+          return EventStatus.CONFIRMED;
+  }
+}
+
+export const lookupReponseByEventStatus = (responseStatus: EventStatus): string => {
+  switch (responseStatus) {
+      case EventStatus.TENTATIVE:
+          return 'tentative';
+      case EventStatus.CANCELLED:
+          return 'cancelled';
+      default:
+        return 'confirmed';
+  }
+}
