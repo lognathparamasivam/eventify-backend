@@ -14,7 +14,7 @@ Eventify is a comprehensive Event Planning and Management System that allows use
 
 The Application Overview documentation provide completed details about setup and installation of project
 
-[Project Overview Documentation] (https://docs.google.com/document/d/1ZjRe3G8T_CuRGXq2g4QcDrfKuJ_tFHcVuoHG3tA9os/edit)
+[Project Overview Documentation](https://docs.google.com/document/d/1ZjRe3G8T_CuRGXq2g4QcDrfKuJ_tFHcVuoHG3tA9os/edit)
 
 ## How to Use
 
