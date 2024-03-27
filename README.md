@@ -10,6 +10,12 @@ Eventify is a comprehensive Event Planning and Management System that allows use
 - **User-friendly RSVP Process**: Provide a user-friendly RSVP and registration process, allowing attendees to confirm attendance, provide additional details, and access event-specific information seamlessly.
 - **Integration with Calendars**: Support integration with calendars, allowing users to synchronize event schedules with their preferred calendar applications.
 
+.## Application Overview Documentation
+
+The Application Overview documentation provide completed details about setup and installation of project
+
+[Project Overview Documentation]([http://localhost:3000/api-docs](https://docs.google.com/document/d/1Zj-Re3G8T_CuRGXq2g4QcDrfKuJ_tFHcVuoHG3tA9os/edit)https://docs.google.com/document/d/1Zj-Re3G8T_CuRGXq2g4QcDrfKuJ_tFHcVuoHG3tA9os/edit)
+
 ## How to Use
 
 ### Prerequisites
@@ -37,3 +43,7 @@ Eventify is a comprehensive Event Planning and Management System that allows use
 The API documentation is provided in the Swagger format. You can access it by visiting the following URL:
 
 [API Documentation](http://localhost:3000/api-docs)
+
+
+
+
