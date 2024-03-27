@@ -311,7 +311,7 @@ export class InvitationService {
       const subject = `Invitation to ${event.title}`;
       const htmlContent = `
           <p>Hello,</p>
-          <p>You are invited to attend ${event.title} on ${event.startDate?.toISOString()}</p>`;
+          <p>You are invited to attend ${event.title} on ${event.startDate}</p>`;
 
       await this.mailService.sendMail(userEmail, subject, htmlContent);
     }
@@ -319,6 +319,7 @@ export class InvitationService {
       logger.error(`Error occured on sendInvitation ${err}`)
     }
   }
+  
   
 
   async checkUserCheckin(userId: number, eventId: number): Promise<boolean> {
@@ -353,7 +354,7 @@ export class InvitationService {
       })
     }
 
-    await this.sendInvitation(invitation!.event, invitation!.user.email)
+    await this.sendReminder(invitation!.event, invitation!.user.email)
     await this.notificationService.createNotification({
       message: `Reminder: You have an Event ${invitation?.event.title} on ${invitation?.event.startDate}`,
       userId: invitation!.userId,
@@ -367,7 +368,7 @@ export class InvitationService {
       const htmlContent = `
           <p>Hello,</p>
           <p>A Reminder from Organizer</p>
-          <p>You have an Event ${event.title} to attend on ${event.startDate?.toISOString()}</p>`;
+          <p>You have an Event ${event.title} to attend on ${event.startDate}</p>`;
 
       await this.mailService.sendMail(userEmail, subject, htmlContent);
     }

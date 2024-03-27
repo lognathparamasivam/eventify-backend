@@ -5,21 +5,21 @@ const envFile = process.env.NODE_ENV === 'production' ? '.env.prod' :
 dotenv.config({ path: envFile });
 
 const properties = {
-  env: process.env.NODE_ENV ?? '',
+  env: process.env.NODE_ENV ,
   port: 3000,
-  logLevel: process.env.LOG_LEVEL ?? '',
+  logLevel: process.env.LOG_LEVEL ,
   secretKey: process.env.SECRET_KEY ?? '',
-  googleClientID: process.env.GOOGLE_CLIENT_ID ?? '',
-  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-  dbHost: process.env.DB_HOST ??'',
-  dbPort: Number(process.env.DB_PORT) ?? 3306,
-  dbUser: process.env.DB_USER ??'',
-  dbPassword: process.env.DB_PASSWORD ?? '',
-  dbDatabase: process.env.DB_DATABASE ?? '',
+  googleClientID: process.env.GOOGLE_CLIENT_ID ,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ,
+  dbHost: process.env.DB_HOST,
+  dbPort: Number(process.env.DB_PORT),
+  dbUser: process.env.DB_USER,
+  dbPassword: process.env.DB_PASSWORD ,
+  dbDatabase: process.env.DB_DATABASE ,
   ormLogging: Boolean(process.env.ORM_LOGGING),
-  jwtExpiry: process.env.JWT_TOKEN_EXPIRY ?? '',
-  mailProviderId: process.env.MAIL_PROVIDER_ID ?? '',
-  mailProviderPassword: process.env.MAIL_PROVIDER_PASSWORD ?? '',
+  jwtExpiry: process.env.JWT_TOKEN_EXPIRY ,
+  mailProviderId: process.env.MAIL_PROVIDER_ID ,
+  mailProviderPassword: process.env.MAIL_PROVIDER_PASSWORD ,
 };
 
 export default properties;
