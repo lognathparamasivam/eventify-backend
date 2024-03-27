@@ -14,7 +14,9 @@
     "test": "jest --runInBand --coverage --detectOpenHandles --forceExit --passWithNoTests",
     "coverage": "npx nyc --reporter=lcov --report-dir=coverage npm test",
     "docker:build": "docker build -t eventify-backend .",
-    "docker:run": "docker run -p 3000:3000 -e NODE_ENV=dev eventify-backend"
+    "docker:run": "docker run -p 3000:3000 -e NODE_ENV=dev eventify-backend",
+    "migrate:generate": "NODE_ENV=dev typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts"
+
   },
   "keywords": [],
   "author": "",

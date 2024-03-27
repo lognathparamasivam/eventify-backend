@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import properties from '../properties';
 
-const algorithm = 'aes-128-cbc'; 
+const algorithm = 'AES-256-GCM'; 
 const key = properties.secretKey;
 const iv = crypto.randomBytes(16); 
 
